@@ -1,6 +1,6 @@
 # PromptSage
 
-<img src="Assets/logo.png" width="120" height="120" alt="PromptSage Logo">
+<img src="Assets/logo.svg" width="120" height="120" alt="PromptSage Logo">
 
 PromptSage is a lightweight Mac menu bar app that helps you craft perfect AI prompts. It observes when you're writing in any AI tool (web or native app) and offers to enhance your prompt before submission.
 
@@ -44,6 +44,33 @@ PromptSage is a lightweight Mac menu bar app that helps you craft perfect AI pro
 2. Move PromptSage.app to your Applications folder
 3. Launch the app and follow the setup instructions
 4. Grant Accessibility permissions when prompted
+
+## Quick Start Guide
+
+### Using Environment Variables for API Keys
+
+PromptSage can use API keys from environment variables:
+
+- `OPENAI_API_KEY` - For OpenAI (GPT-3.5, GPT-4, etc.)
+- `ANTHROPIC_API_KEY` - For Anthropic Claude models
+- `GOOGLE_API_KEY` - For Google Gemini models
+
+For convenience, you can use the included launcher script that will prompt for your API keys and set the appropriate environment variables:
+
+```bash
+# Run the launcher script
+./run_prompt_sage.sh
+```
+
+### Manual Configuration
+
+You can also configure API keys directly in the app:
+
+1. Click the PromptSage icon in the menu bar
+2. Select "Preferences..."
+3. Go to the "LLM Settings" tab
+4. Choose your preferred LLM provider
+5. Enter your API key
 
 ## Pricing
 
@@ -99,6 +126,12 @@ open PromptSage.xcodeproj
 ```
 
 3. Build the project (⌘B) or run (⌘R)
+
+### Development Notes
+
+- Use local development with Ollama for testing without API keys
+- The app uses macOS Accessibility APIs for text monitoring
+- API keys can be set in environment variables for development
 
 ## Contributing
 

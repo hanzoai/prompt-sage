@@ -134,6 +134,28 @@ struct Preferences: View {
                     Text("API Key")
                         .font(.system(size: 14, weight: .medium))
                     
+                    let envKeyName = getEnvironmentKeyName(for: selectedProvider)
+                    if ProcessInfo.processInfo.environment[envKeyName] != nil {
+                        HStack {
+                            Text("Using API key from \(envKeyName) environment variable")
+                                .font(.system(size: 12))
+                                .foregroundColor(.green)
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                // Clear stored key and reload from env variable
+                                UserDefaults.standard.removeObject(forKey: "APIKey")
+                                let enhancer = PromptEnhancer()
+                                apiKey = enhancer.apiKey
+                            }) {
+                                Text("Reload")
+                                    .font(.system(size: 12))
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                        }
+                    }
+                    
                     SecureField("Enter API key", text: $apiKey)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onChange(of: apiKey) { _ in savePreferences() }
@@ -315,6 +337,22 @@ struct Preferences: View {
         }
     }
     
+    // MARK: - Helper Methods
+    
+    // Get the environment variable name for a given provider
+    private func getEnvironmentKeyName(for provider: LLMProvider) -> String {
+        switch provider {
+        case .openAI:
+            return "OPENAI_API_KEY"
+        case .anthropic:
+            return "ANTHROPIC_API_KEY"
+        case .googleAI:
+            return "GOOGLE_API_KEY"
+        case .local:
+            return "" // Local provider doesn't use API keys
+        }
+    }
+    
     // MARK: - Preferences Management
     
     // Load preferences from UserDefaults
@@ -338,7 +376,9 @@ struct Preferences: View {
             selectedProvider = provider
         }
         
-        apiKey = defaults.string(forKey: "APIKey") ?? ""
+        // Get API key from PromptEnhancer to ensure we get env variables if present
+        let enhancer = PromptEnhancer()
+        apiKey = enhancer.apiKey
         temperature = defaults.double(forKey: "Temperature")
         
         // Set default temperature if not found
