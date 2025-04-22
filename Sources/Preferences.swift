@@ -71,7 +71,7 @@ struct Preferences: View {
                     .tag(3)
             }
             .tabViewStyle(DefaultTabViewStyle())
-            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .never))
+            // Removed the indexViewStyle line as it's unavailable in macOS
             .padding(20)
         }
         .frame(width: 500, height: 400)
@@ -309,7 +309,8 @@ struct Preferences: View {
                     Text(option).tag(option)
                 }
             }
-            .pickerStyle(PopUpButtonStyle())
+            // Changed from PopUpButtonStyle to default picker style compatible with macOS
+            .pickerStyle(DefaultPickerStyle())
             .onChange(of: selection.wrappedValue) { _ in savePreferences() }
         }
     }

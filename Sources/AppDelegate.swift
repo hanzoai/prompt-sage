@@ -1,5 +1,6 @@
 import Cocoa
 import SwiftUI
+import UserNotifications
 
 @main
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -18,6 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupMenuBar()
         initializeComponents()
         checkAccessibilityPermissions()
+        setupNotifications()
     }
     
     // MARK: - Setup
@@ -75,6 +77,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    private func setupNotifications() {
+        // Request authorization for notifications
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
+            if granted {
+                print("Notification authorization granted")
+            } else if let error = error {
+                print("Notification authorization denied: \(error.localizedDescription)")
+            }
+        }
+        
+        // Set the delegate for handling notification responses
+        UNUserNotificationCenter.current().delegate = self
+    }
+    
     // MARK: - Actions
     
     @objc private func toggleActive(_ sender: Any) {
@@ -99,10 +115,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             presentPromptEnhancementUI(originalPrompt: currentText)
         } else {
             // Show notification that no text is selected
-            let notification = NSUserNotification()
-            notification.title = "No Text Selected"
-            notification.informativeText = "Please select text in an application to enhance it."
-            NSUserNotificationCenter.default.deliver(notification)
+            showNotification(
+                title: "No Text Selected",
+                body: "Please select text in an application to enhance it.",
+                actionButtonTitle: nil
+            )
         }
     }
     
@@ -137,6 +154,33 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Update the menu bar icon to show active/inactive state
             if let button = statusItem.button {
                 button.image = NSImage(named: isActive ? "MenuBarIcon" : "MenuBarIconInactive")
+            }
+        }
+    }
+    
+    // MARK: - Notifications
+    
+    private func showNotification(title: String, body: String, actionButtonTitle: String?) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = UNNotificationSound.default
+        
+        // Add prompt text to user info if needed
+        if title == "AI Prompt Detected" {
+            content.userInfo["promptText"] = body
+        }
+        
+        // Create a unique identifier for the notification
+        let identifier = UUID().uuidString
+        
+        // Create the request
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+        
+        // Add the request to the notification center
+        UNUserNotificationCenter.current().add(request) { error in
+            if let error = error {
+                print("Error showing notification: \(error.localizedDescription)")
             }
         }
     }
@@ -198,14 +242,11 @@ extension AppDelegate: PromptDetectorDelegate {
     func promptDetected(_ prompt: String) {
         // When a potential AI prompt is detected, show a notification
         if UserDefaults.standard.bool(forKey: "ShowNotifications") {
-            let notification = NSUserNotification()
-            notification.title = "AI Prompt Detected"
-            notification.informativeText = "Would you like to enhance this prompt?"
-            notification.hasActionButton = true
-            notification.actionButtonTitle = "Enhance"
-            notification.otherButtonTitle = "Ignore"
-            
-            NSUserNotificationCenter.default.deliver(notification)
+            showNotification(
+                title: "AI Prompt Detected",
+                body: "Would you like to enhance this prompt?",
+                actionButtonTitle: "Enhance"
+            )
         }
         
         // If automatic enhancement is enabled, show the enhancement UI
@@ -215,13 +256,30 @@ extension AppDelegate: PromptDetectorDelegate {
     }
 }
 
-// MARK: - NSUserNotificationCenterDelegate
-extension AppDelegate: NSUserNotificationCenterDelegate {
-    func userNotificationCenter(_ center: NSUserNotificationCenter, didActivate notification: NSUserNotification) {
-        if notification.activationType == .actionButtonClicked {
-            if let promptText = notification.informativeText {
-                presentPromptEnhancementUI(originalPrompt: promptText)
-            }
+// MARK: - UNUserNotificationCenterDelegate
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, 
+                               didReceive response: UNNotificationResponse, 
+                               withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Handle the notification response
+        switch response.actionIdentifier {
+        case UNNotificationDefaultActionIdentifier:
+            // User tapped on the notification
+            // Get prompt text from user info if available, otherwise use the notification body
+            let promptText = response.notification.request.content.userInfo["promptText"] as? String
+                ?? response.notification.request.content.body
+            presentPromptEnhancementUI(originalPrompt: promptText)
+        default:
+            break
         }
+        
+        completionHandler()
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                              willPresent notification: UNNotification,
+                              withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Allow the notification to be shown even when the app is in the foreground
+        completionHandler([.banner, .sound])
     }
 }
