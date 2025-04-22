@@ -60,7 +60,8 @@ class PromptEnhancer {
             self.style = .balanced
         }
         
-        self.apiKey = UserDefaults.standard.string(forKey: "APIKey") ?? ""
+        // Try to get API key from environment variables first, then from UserDefaults
+        self.apiKey = self.getAPIKeyForProvider(provider: self.provider)
         self.temperature = UserDefaults.standard.double(forKey: "Temperature")
         self.maxTokens = UserDefaults.standard.integer(forKey: "MaxTokens")
         
@@ -73,6 +74,11 @@ class PromptEnhancer {
             self.maxTokens = 1000
         }
         
+        // Save the API key to UserDefaults if it was found in environment variables
+        if !self.apiKey.isEmpty && UserDefaults.standard.string(forKey: "APIKey") == nil {
+            UserDefaults.standard.set(self.apiKey, forKey: "APIKey")
+        }
+        
         // Load enhancement statistics
         self.enhancementsToday = UserDefaults.standard.integer(forKey: "EnhancementsToday")
         if let lastTime = UserDefaults.standard.object(forKey: "LastEnhancementTime") as? Date {
@@ -81,6 +87,30 @@ class PromptEnhancer {
         
         // Reset daily count if needed
         checkAndResetDailyCount()
+    }
+    
+    // Helper method to get API key from environment variables or UserDefaults
+    private func getAPIKeyForProvider(provider: LLMProvider) -> String {
+        // Check for environment variables first based on provider
+        let envVariable: String?
+        switch provider {
+        case .openAI:
+            envVariable = ProcessInfo.processInfo.environment["OPENAI_API_KEY"]
+        case .anthropic:
+            envVariable = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"]
+        case .googleAI:
+            envVariable = ProcessInfo.processInfo.environment["GOOGLE_API_KEY"]
+        case .local:
+            // Local Ollama doesn't typically need an API key
+            envVariable = nil
+        }
+        
+        // Return environment variable if available, otherwise fall back to UserDefaults
+        if let key = envVariable, !key.isEmpty {
+            return key
+        } else {
+            return UserDefaults.standard.string(forKey: "APIKey") ?? ""
+        }
     }
     
     // Update configuration
@@ -92,6 +122,15 @@ class PromptEnhancer {
         if let provider = provider {
             self.provider = provider
             UserDefaults.standard.set(provider.rawValue, forKey: "LLMProvider")
+            
+            // When provider changes, check for environment variable for new provider
+            if apiKey == nil {
+                let newKey = getAPIKeyForProvider(provider: provider)
+                if !newKey.isEmpty {
+                    self.apiKey = newKey
+                    UserDefaults.standard.set(newKey, forKey: "APIKey")
+                }
+            }
         }
         
         if let apiKey = apiKey {
