@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22505" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22505"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="NSApplication"/>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="PromptSage" customModuleProvider="target">
+            <connections>
+                <outlet property="menu" destination="uQy-DD-JDr" id="XBo-yE-nii"/>
+            </connections>
+        </customObject>
+        <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
+        <menu id="uQy-DD-JDr">
+            <items>
+                <menuItem title="Status: Active" id="dMs-cI-mzQ">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleActive:" target="Voe-Tx-rLC" id="dlZ-cf-jKK"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="kCx-zV-S6T"/>
+                <menuItem title="Enhance Prompt" keyEquivalent="e" id="snW-S8-Cw5">
+                    <connections>
+                        <action selector="enhancePrompt:" target="Voe-Tx-rLC" id="dXb-L5-hMM"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="VOq-y0-SEH"/>
+                <menuItem title="Preferences..." keyEquivalent="," id="BOF-NM-1cW">
+                    <connections>
+                        <action selector="openPreferences:" target="Voe-Tx-rLC" id="6gE-U8-guM"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
+                <menuItem title="Quit PromptSage" keyEquivalent="q" id="4sb-4s-VLi">
+                    <connections>
+                        <action selector="terminate:" target="-2" id="Te7-pn-YzF"/>
+                    </connections>
+                </menuItem>
+            </items>
+            <point key="canvasLocation" x="139" y="154"/>
+        </menu>
+    </objects>
+</document>
