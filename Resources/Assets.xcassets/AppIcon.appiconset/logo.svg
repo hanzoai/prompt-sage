@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="512" cy="512" r="460" fill="#1E1E1E"/>
+  
+  <!-- Gradient Overlay -->
+  <circle cx="512" cy="512" r="460" fill="url(#gradient)" opacity="0.9"/>
+  
+  <!-- Chat Bubble Outer Shape -->
+  <path d="M512 220C360 220 240 340 240 480C240 580 290 660 360 680L340 790L440 720C470 730 490 740 540 740C690 740 810 620 810 480C810 340 660 220 512 220Z" fill="#6C5CE7" opacity="0.9"/>
+  
+  <!-- Inner Shape (Sage/Light) -->
+  <path d="M512 280C380 280 300 380 300 480C300 540 340 590 390 620L380 700L450 650C470 655 490 660 520 660C640 660 720 580 720 480C720 380 640 280 512 280Z" fill="#FFFFFF" opacity="0.95"/>
+  
+  <!-- Sparkle Elements -->
+  <path d="M560 400L590 370L620 400L590 430L560 400Z" fill="#6C5CE7"/>
+  <path d="M420 510L450 480L480 510L450 540L420 510Z" fill="#6C5CE7"/>
+  <path d="M560 550L590 520L620 550L590 580L560 550Z" fill="#6C5CE7"/>
+  
+  <!-- Center Line Element (Wand/Staff) -->
+  <line x1="512" y1="380" x2="512" y2="580" stroke="#6C5CE7" stroke-width="20" stroke-linecap="round"/>
+  
+  <!-- Elliptical Glow at Base of Wand -->
+  <ellipse cx="512" cy="580" rx="40" ry="15" fill="#6C5CE7" opacity="0.5"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7F5AFF" />
+      <stop offset="50%" stop-color="#5A67FF" />
+      <stop offset="100%" stop-color="#4EBAFF" />
+    </linearGradient>
+  </defs>
+</svg>
