@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="prompt-sage" width="880"></p>
+
 # PromptSage
 
 <img src="Assets/logo.svg" width="120" height="120" alt="PromptSage Logo">
